@@ -120,7 +120,7 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     ```
     - Após criado, modifique o arquivo `.env` colocando a URL do seu container:
         ```env
-        DATABASE_URL=postgresql+asyncpg://codenine:codenine2025@localhost:5432/tecsus
+        DATABASE_POSTGRES_URL=postgresql+asyncpg://codenine:codenine2025@localhost:5432/tecsus
         ```
     - Use o DBeaver para se conectar ao banco de dados.
 
@@ -146,7 +146,7 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     config = context.config
 
     # Set the database URL from your settings
-    config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+    config.set_main_option("sqlalchemy.url", settings.DATABASE_POSTGRES_URL)
 
     # Interpret the config file for Python logging.
     # This line sets up loggers basically.
