@@ -56,7 +56,6 @@ jobs:
 
       - name: Verificar Ruff e Mypy no DataProcessorService
         run: |
-          cd DataProcessorService
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           ruff format .
@@ -67,7 +66,6 @@ jobs:
       - name: Instalar dependências e rodar testes - DataProcessorService
         if: env.has_tests_dataprocessor == 'true'
         run: |
-          cd DataProcessorService
           python -m pip install --upgrade pip
           pip install pytest pytest-cov
           pip install -r requirements.txt
