@@ -228,7 +228,7 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     DATABASE_MONGO_URL=mongodb+srv://<username>:<password>@cluster0.mongodb.net/test?retryWrites=true&w=majority
     ```
 
-9. **Rodar a aplicação**:
+10. **Rodar a aplicação**:
     - Para rodar a aplicação:
     ```bash
     python -m main
