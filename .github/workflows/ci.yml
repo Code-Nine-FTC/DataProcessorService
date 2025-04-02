@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+      - "feature/*"
+      - "hotfix/*"
+
+jobs:
+  test:
+    name: Testes e Linting
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: tecsus
+          POSTGRES_USER: codenine
+          POSTGRES_PASSWORD: codenine-2025
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:latest
+
+    steps:
+      - name: Checkout do código com submódulos
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
+
+      - name: Atualizar submódulos
+        run: git submodule update --remote --merge
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12.5"
+            
+      - name: Verificar se há testes no DataProcessorService
+        id: check_tests_dataprocessor
+        run: |
+          if find DataProcessorService -type f -name "test_*.py" -o -name "*_test.py" | grep -q .; then
+            echo "has_tests_dataprocessor=true" >> $GITHUB_ENV
+          else
+            echo "has_tests_dataprocessor=false" >> $GITHUB_ENV
+          fi
+
+      - name: Verificar Ruff e Mypy no DataProcessorService
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          ruff format .
+          ruff check .
+          mypy .
+        
+
+      - name: Instalar dependências e rodar testes - DataProcessorService
+        if: env.has_tests_dataprocessor == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov
+          pip install -r requirements.txt
+          ruff format .
+          ruff check .
+          mypy .
+          pytest --cov=app
+
+
+
+
+          mypy .
+          pytest --cov=app
+
+      

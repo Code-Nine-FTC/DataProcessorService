@@ -70,6 +70,7 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     }
     ```
 5. **Iniciar o submódulo**:
+        Vá para a pasta `/services/storage/core`
         - Para inicializar o submódulo, execute o comando:
         ```bash
         git submodule update --init
@@ -120,7 +121,7 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     ```
     - Após criado, modifique o arquivo `.env` colocando a URL do seu container:
         ```env
-        DATABASE_URL=postgresql+asyncpg://codenine:codenine2025@localhost:5432/tecsus
+        DATABASE_POSTGRES_URL=postgresql+asyncpg://codenine:codenine2025@localhost:5432/tecsus
         ```
     - Use o DBeaver para se conectar ao banco de dados.
 
@@ -137,8 +138,8 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     from alembic import context
     from sqlalchemy.ext.asyncio import create_async_engine
     from sqlalchemy.ext.asyncio import AsyncConnection
-    from app.config.settings import settings
-    from app.core.models.db_model import Base
+    from src.config.settings import settings
+    from src.services.storage.core.models.db_model import Base
     import asyncio
 
     # This is the Alembic Config object, which provides
@@ -146,7 +147,7 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     config = context.config
 
     # Set the database URL from your settings
-    config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+    config.set_main_option("sqlalchemy.url", settings.DATABASE_POSTGRES_URL)
 
     # Interpret the config file for Python logging.
     # This line sets up loggers basically.
@@ -220,7 +221,14 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
         alembic upgrade head
     ```
 
-9. **Rodar a aplicação**:
+9. **Configurar arquivo `.env`**
+
+    ```env
+    DATABASE_POSTGRES_URL=postgresql+asyncpg://<user>:<password>@<host>:<port>/<database>
+    DATABASE_MONGO_URL=mongodb+srv://<username>:<password>@cluster0.mongodb.net/test?retryWrites=true&w=majority
+    ```
+
+10. **Rodar a aplicação**:
     - Para rodar a aplicação:
     ```bash
     python -m main
