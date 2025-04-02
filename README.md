@@ -221,6 +221,13 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
         alembic upgrade head
     ```
 
+9. **Configurar arquivo `.env`**
+
+    ```env
+    DATABASE_POSTGRES_URL=postgresql+asyncpg://<user>:<password>@<host>:<port>/<database>
+    DATABASE_MONGO_URL=mongodb+srv://<username>:<password>@cluster0.mongodb.net/test?retryWrites=true&w=majority
+    ```
+
 9. **Rodar a aplicação**:
     - Para rodar a aplicação:
     ```bash
