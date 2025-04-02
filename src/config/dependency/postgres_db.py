@@ -24,6 +24,7 @@ class Database(metaclass=Singleton):
     async def ping(self) -> None:
         async with self.session as session:
             await session.execute(text("SELECT 1;"))
+            print("Database connection is alive.")
 
     @property
     def session(self) -> AsyncSession:
