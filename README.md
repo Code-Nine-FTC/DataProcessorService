@@ -70,6 +70,7 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     }
     ```
 5. **Iniciar o submódulo**:
+        Vá para a pasta `/services/storage/core`
         - Para inicializar o submódulo, execute o comando:
         ```bash
         git submodule update --init
@@ -137,8 +138,8 @@ Para rodar o serviço `devops-testes`, siga as instruções abaixo:
     from alembic import context
     from sqlalchemy.ext.asyncio import create_async_engine
     from sqlalchemy.ext.asyncio import AsyncConnection
-    from app.config.settings import settings
-    from app.core.models.db_model import Base
+    from src.config.settings import settings
+    from src.services.storage.core.models.db_model import Base
     import asyncio
 
     # This is the Alembic Config object, which provides
