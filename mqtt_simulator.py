@@ -7,7 +7,7 @@ import paho.mqtt.client as mqtt
 # Configurações do broker MQTT
 broker = "test.mosquitto.org"
 port = 1883
-topic = "sensor/leitura"
+topic = "/newData"
 
 # Cria o cliente MQTT
 mqtt_client = mqtt.Client()

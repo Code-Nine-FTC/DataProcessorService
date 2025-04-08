@@ -9,6 +9,11 @@ class Settings(BaseSettings):
     )
     DATABASE_MONGO_URL: str
     DATABASE_POSTGRES_URL: str
+    MQTT_BROKER_HOST: str
+    MQTT_BROKER_PORT: int
+    MQTT_BROKER_TOPIC: str
+    MQTT_BROKER_CLIENT_NAME: str
+    MQTT_BROKER_KEEPALIVE: int
 
 
 settings = Settings()  # type: ignore[call-arg]
