@@ -11,7 +11,7 @@ class DatabaseMongo(metaclass=Singleton):
     def __init__(self) -> None:
         self._settings: Settings = Settings()  # type: ignore[call-arg]
         self._client: MongoClient = self.create_client()  # type: ignore[no-any-unimported]
-        self._db = self.get_database()
+        self._db = self._get_database()
 
     def create_client(self) -> MongoClient:  # type: ignore[no-any-unimported]
         return MongoClient(
@@ -29,7 +29,7 @@ class DatabaseMongo(metaclass=Singleton):
         except Exception as e:
             raise Exception(f"MongoDB ping failed: {e}") from e
 
-    def get_database(self) -> Database:  # type: ignore[no-any-unimported]
+    def _get_database(self) -> Database:  # type: ignore[no-any-unimported]
         return self._client["tecsus"]
 
     def get_collection(self, collection_name: str) -> Collection:  # type: ignore[no-any-unimported]

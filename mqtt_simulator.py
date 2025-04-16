@@ -1,4 +1,3 @@
-# Simulador de envio de dados MQTT
 import json
 import time
 
@@ -18,17 +17,14 @@ mqtt_client.connect(broker, port)
 # Simula o envio de dados
 print("Enviando dados simulados para o tópico MQTT...")
 while True:
-    # Dados simulados
     payload = {
-        "sensor_id": "123",
+        "uid": "123",
         "temperature": 25.5,
         "humidity": 60,
-        "timestamp": int(time.time()),  # Timestamp atual em Unix
+        "timestamp": int(time.time()),
     }
 
     # Converte o payload para JSON e publica no tópico
     mqtt_client.publish(topic, json.dumps(payload))
     print(f"Dados enviados para o tópico '{topic}': {payload}")
-
-    # Aguarda 5 segundos antes de enviar novamente
     time.sleep(15)
