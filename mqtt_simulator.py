@@ -18,10 +18,12 @@ mqtt_client.connect(broker, port)
 print("Enviando dados simulados para o tópico MQTT...")
 while True:
     payload = {
-        "uid": "123",
-        "temperature": 25.5,
-        "humidity": 60,
-        "timestamp": int(time.time()),
+        "uid": "12345",
+        "parameter_type": [
+            {"detect_type": "temperature", "value": 25.5},
+            {"detect_type": "humidity", "value": 60},
+        ],
+        "create_date": int(time.time()),
     }
 
     # Converte o payload para JSON e publica no tópico

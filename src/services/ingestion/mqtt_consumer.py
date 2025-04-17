@@ -3,34 +3,33 @@ import json
 
 from src.config.dependency.mqtt_client_connection import MQTTClientConnection
 from src.config.settings import Settings
-from src.services.ingestion.mongo_repository import MongoRepository
+from src.utils.common import DataObserver, Singleton
 
 
-class MQTTConsumer:
-    def __init__(self) -> None:
-        self.mongo_repository = MongoRepository("station_data")
-        self.mqtt_client_connection = MQTTClientConnection()
-        self.mqtt_client_connection.mqtt_client.on_message = self.on_message
+class MQTTConsumer(metaclass=Singleton):
+    def __init__(self, observer: DataObserver) -> None:
+        self.__mqtt_client_connection = MQTTClientConnection()
+        self.__mqtt_client_connection.mqtt_client.on_message = self.on_message
+        self.__observer = observer
 
-    def on_message(self, client, userdata, msg):
+    def on_message(self, client: object, userdata: object, msg: object) -> None:
         print("Message received from MQTT:", msg.payload.decode())
         try:
             payload = json.loads(msg.payload.decode())
             print("Payload:", payload)
-            self.mongo_repository.insert_data(payload)
-            print("Data successfully inserted into MongoDB")
+            self.__observer.on_data_received(payload)
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {e}")
         except Exception as e:
-            print(f"MQTT message failed: {e}")
+            print(f"Error processing message: {e}")
 
     def start(self) -> None:
-        self.mqtt_client_connection.connect()
-        self.mqtt_client_connection.mqtt_client.subscribe(
+        self.__mqtt_client_connection.connect()
+        self.__mqtt_client_connection.mqtt_client.subscribe(
             Settings().MQTT_BROKER_TOPIC
         )
-        self.mqtt_client_connection.start_loop()
+        self.__mqtt_client_connection.start_loop()
 
     def stop(self) -> None:
-        self.mqtt_client_connection.stop_loop()
-        self.mqtt_client_connection.disconnect()
+        self.__mqtt_client_connection.stop_loop()
+        self.__mqtt_client_connection.disconnect()
