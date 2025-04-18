@@ -12,8 +12,9 @@ class MQTTConsumer(metaclass=Singleton):
         self.__mqtt_client_connection = MQTTClientConnection()
         self.__mqtt_client_connection.mqtt_client.on_message = self.on_message
         self.__observer = MongoObserver()
+        self.__settings = Settings()  # type: ignore[call-arg]
 
-    def on_message(self, client: object, userdata: object, msg: object) -> None:
+    def on_message(self, client, userdata, msg) -> None:  # type: ignore[no-untyped-def]
         print("Message received from MQTT:", msg.payload.decode())
         try:
             payload = json.loads(msg.payload.decode())
@@ -27,7 +28,7 @@ class MQTTConsumer(metaclass=Singleton):
     def start(self) -> None:
         self.__mqtt_client_connection.connect()
         self.__mqtt_client_connection.mqtt_client.subscribe(
-            Settings().MQTT_BROKER_TOPIC
+            self.__settings.MQTT_BROKER_TOPIC
         )
         self.__mqtt_client_connection.start_loop()
 

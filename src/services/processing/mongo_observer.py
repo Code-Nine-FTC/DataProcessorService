@@ -2,10 +2,10 @@
 from typing import Any
 
 from src.services.ingestion.mongo_repository import MongoRepository
-from src.utils.common import DataObserver, Singleton
+from src.utils.common import CombinedMeta, DataObserver
 
 
-class MongoObserver(DataObserver, metaclass=Singleton):
+class MongoObserver(DataObserver, metaclass=CombinedMeta):
     def __init__(self) -> None:
         self.__mongo_repository = MongoRepository()
 

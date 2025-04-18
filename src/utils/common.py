@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import Any
 
 
@@ -13,7 +13,11 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-class DataObserver(ABC):
+class CombinedMeta(Singleton, ABCMeta):
+    pass
+
+
+class DataObserver(metaclass=CombinedMeta):
     @abstractmethod
-    def on_data_received(self, data: dict) -> None:
+    def on_data_received(self, data: dict[str, Any]) -> None:
         pass

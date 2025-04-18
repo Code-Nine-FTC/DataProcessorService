@@ -14,41 +14,59 @@ from src.services.storage.core.models.db_model import (
 
 
 class PostgresStorage:
-    def __init__(self, session: AsyncSession, station_data: dict[str, Any]) -> None:
+    def __init__(self, session: AsyncSession) -> None:
         self._session = session
-        self._station_data = station_data
 
-    async def execute(self) -> None:
+    async def execute(self, datas: list[dict[str, Any]]) -> None:
         try:
-            station = await self._get_station_by_uid()
-            if not station:
-                print("Station not found with uid:", self._station_data.get("uid"))
-            parameters = await self._get_all_parameter(station.id)
-            for parameter in parameters:
-                if parameter in self._station_data.keys():
-                    parameter_id = parameter.get("id")
-                    await self._create_measure(
-                        self._build_measure(
-                            parameter_id,
-                            self._station_data.get("unixtime"),
-                            self._station_data.get(parameter.get("detect_type")),
-                            offset=parameter.get("offset"),
-                            factor=parameter.get("factor"),
-                        )
-                    )
+            for data in datas:
+                await self._process_data(data)
             await self._session.commit()
         except Exception as e:
             await self._session.rollback()
             raise e
 
+    async def _process_data(self, data: dict[str, Any]) -> None:
+        station = await self._get_station_by_uid(data.get("uid"))  # type: ignore[arg-type]
+        if not station:
+            print("Station not found with uid:", data.get("uid"))
+            return
+        parameters = await self._get_all_parameter(station.id)
+        if not parameters:
+            print("No parameters found for station:", station.id)
+            return
+
+        for parameter in parameters:
+            await self._process_parameter(data, parameter)
+
+    async def _process_parameter(
+        self, data: dict[str, Any], parameter: dict[str, Any]
+    ) -> None:
+        detect_type = parameter.get("detect_type")
+        if detect_type not in data:
+            return
+
+        parameter_id = parameter.get("id")
+        value = data.get(detect_type)
+        unixtime = data.get("unixtime")
+
+        measure = self._build_measure(
+            parameter_id,  # type: ignore[arg-type]
+            unixtime,  # type: ignore[arg-type]
+            value,  # type: ignore[arg-type]
+            offset=parameter.get("offset"),
+            factor=parameter.get("factor"),
+        )
+        await self._create_measure(measure)
+
     async def _create_measure(self, measure: MeasureData) -> None:
-        new_measure = Measures(measure.model_dump())
+        new_measure = Measures(**measure.model_dump())
         self._session.add(new_measure)
         await self._session.flush()
 
-    async def _get_station_by_uid(self) -> WeatherStation | None:
+    async def _get_station_by_uid(self, uid: str) -> WeatherStation | None:
         statement = select(WeatherStation).where(
-            WeatherStation.uid == self._station_data.get("uid")
+            WeatherStation.uid == uid, WeatherStation.is_active
         )
         result = await self._session.execute(statement)
         station = result.scalars().first()
@@ -65,22 +83,24 @@ class PostgresStorage:
                 ParameterType.offset,
             )
             .join(ParameterType, Parameter.parameter_type_id == ParameterType.id)
-            .where(Parameter.station_id == station_id, Parameter.is_active)
+            .where(Parameter.station_id == station_id, ParameterType.is_active)
         )
         result = await self._session.execute(statement)
         parameters = result.all()
         return [parameter._asdict() for parameter in parameters]
 
+    @staticmethod
     def _build_measure(
-        self,
         parameter_id: int,
         create_date: int,
         value: float,
         offset: float | None = None,
         factor: float | None = None,
     ) -> MeasureData:
-        # fazer o calculo da medida!!!
-        # value = value * parameter_type.factor + parameter_type.offset??? sera que é isso mesmo???
+        if factor is not None and factor != 0:
+            value *= factor
+        if offset is not None:
+            value += offset
         return MeasureData(
             measure_date=create_date,
             value=value,

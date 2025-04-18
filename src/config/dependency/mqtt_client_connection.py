@@ -7,18 +7,19 @@ from src.utils.common import Singleton
 
 class MQTTClientConnection(metaclass=Singleton):
     def __init__(self) -> None:
-        self.mqtt_client = Client(client_id=Settings().MQTT_BROKER_CLIENT_NAME)
+        self._settings = Settings()  # type: ignore[call-arg]
+        self.mqtt_client = Client(client_id=self._settings.MQTT_BROKER_CLIENT_NAME)
         self._is_connected = False
 
     def connect(self) -> None:
         try:
             self.mqtt_client.connect(
-                Settings().MQTT_BROKER_HOST,
-                Settings().MQTT_BROKER_PORT,
-                keepalive=Settings().MQTT_BROKER_KEEPALIVE,
+                self._settings.MQTT_BROKER_HOST,
+                self._settings.MQTT_BROKER_PORT,
+                keepalive=self._settings.MQTT_BROKER_KEEPALIVE,
             )
             self._is_connected = True
-            print(f"MQTT Connected on: {Settings().MQTT_BROKER_HOST}")
+            print(f"MQTT Connected on: {self._settings.MQTT_BROKER_HOST}")
         except Exception as e:
             print(f"MQTT Connection failed: {e}")
             self._is_connected = False

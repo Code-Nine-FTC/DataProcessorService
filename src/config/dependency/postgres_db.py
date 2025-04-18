@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from typing import AsyncGenerator
 
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
@@ -14,7 +13,7 @@ from src.config.settings import Settings
 from src.utils.common import Singleton
 
 
-class Database(metaclass=Singleton):
+class DatabasePostgres(metaclass=Singleton):
     def __init__(self) -> None:
         self._engine: AsyncEngine = self._create_engine()  # type: ignore[assignment]
         self._session_maker: async_sessionmaker[AsyncSession] = (
@@ -43,10 +42,3 @@ class Database(metaclass=Singleton):
 
     async def close(self) -> None:
         await self._engine.dispose()
-
-
-class SessionConnection:
-    @staticmethod
-    async def session() -> AsyncGenerator[AsyncSession, None]:
-        async with Database().session as session:
-            yield session
