@@ -5,5 +5,5 @@ from pydantic import BaseModel
 
 class MeasureData(BaseModel):
     measure_date: int
-    value: float | int
+    value: float
     parameter_id: int

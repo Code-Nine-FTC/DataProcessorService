@@ -9,16 +9,14 @@ from src.utils.common import Singleton
 
 class MQTTConsumer(metaclass=Singleton):
     def __init__(self) -> None:
-        self.__mqtt_client_connection = MQTTClientConnection()
-        self.__mqtt_client_connection.mqtt_client.on_message = self.on_message
-        self.__observer = MongoObserver()
         self.__settings = Settings()  # type: ignore[call-arg]
+        self.__mqtt_client_connection = MQTTClientConnection()
+        self.__observer = MongoObserver()
+        self.__mqtt_client_connection.mqtt_client.on_message = self.on_message
 
     def on_message(self, client, userdata, msg) -> None:  # type: ignore[no-untyped-def]
-        print("Message received from MQTT:", msg.payload.decode())
         try:
             payload = json.loads(msg.payload.decode())
-            print("Payload:", payload)
             self.__observer.on_data_received(payload)
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON: {e}")
