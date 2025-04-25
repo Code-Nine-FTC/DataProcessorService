@@ -2,7 +2,7 @@
 
 from src.config.dependency.postgres_db import DatabasePostgres
 from src.services.ingestion.mongo_repository import MongoRepository
-from src.services.storage.postgres_storage import PostgresStorage
+from src.services.storage.storage import PostgresStorage
 
 
 class SyncPostgres:
