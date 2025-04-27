@@ -55,14 +55,15 @@ class PostgresStorage:
             )
         )
 
-        type_alert = await self._data_repository.get_alert_type_by_parameter_id(
+        type_alerts = await self._data_repository.get_alert_type_by_parameter_id(
             parameter_id  # type: ignore[arg-type]
         )
-        if type_alert and self._business_logic.verify_alert(measure, type_alert):
-            await self._data_repository.create_alert(
-                self._business_logic.build_alert(
-                    measure_id=measure.id,
-                    type_alert_id=type_alert.id,
-                    create_date=measure.measure_date,
+        for type_alert in type_alerts:
+            if self._business_logic.verify_alert(measure, type_alert):
+                await self._data_repository.create_alert(
+                    self._business_logic.build_alert(
+                        measure_id=measure.id,
+                        type_alert_id=type_alert.id,
+                        create_date=measure.measure_date,
+                    )
                 )
-            )

@@ -12,6 +12,7 @@ from src.services.storage.core.models.db_model import (
     ParameterType,
     TypeAlert,
     WeatherStation,
+    Alert,
 )
 
 
@@ -43,12 +44,12 @@ class PostgresRepository:
 
     async def get_alert_type_by_parameter_id(
         self, parameter_id: int
-    ) -> TypeAlert | None:
+    ) -> list[TypeAlert]:
         statement = select(TypeAlert).where(
             TypeAlert.is_active, TypeAlert.parameter_id == parameter_id
         )
         result = await self._session.execute(statement)
-        return result.scalar_one_or_none()
+        return result.scalars()
 
     async def create_measure(self, measure: MeasureData) -> Measures:
         new_measure = Measures(**measure.model_dump())
@@ -58,6 +59,7 @@ class PostgresRepository:
         return new_measure
 
     async def create_alert(self, alert: AlertData) -> None:
-        self._session.add(**alert.model_dump())
+        new_alert = Alert(**alert.model_dump())
+        self._session.add(new_alert)
         await self._session.flush()
         await self._session.commit()
