@@ -1,3 +1,6 @@
 [submodule "app/core"]
 	path = app/core
 	url = https://github.com/Code-Nine-FTC/SharedDatabaseService.git
+[submodule "src/services/storage/core"]
+	path = src/services/storage/core
+	url = https://github.com/Code-Nine-FTC/SharedDatabaseService.git
