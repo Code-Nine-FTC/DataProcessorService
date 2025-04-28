@@ -3,4 +3,10 @@
 .vscode
 __pycache__
 *.pyc
+alembic.ini
+alembic
 venv
+.mypy_cache
+.ruff_cache
+.env
+.venv
