@@ -7,12 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.schemas.alert import AlertData
 from src.schemas.measure import MeasureData
 from src.services.storage.core.models.db_model import (
+    Alert,
     Measures,
     Parameter,
     ParameterType,
     TypeAlert,
     WeatherStation,
-    Alert,
 )
 
 
@@ -49,7 +49,7 @@ class PostgresRepository:
             TypeAlert.is_active, TypeAlert.parameter_id == parameter_id
         )
         result = await self._session.execute(statement)
-        return result.scalars()
+        return result.scalars()  # type: ignore[return-value]
 
     async def create_measure(self, measure: MeasureData) -> Measures:
         new_measure = Measures(**measure.model_dump())
