@@ -10,7 +10,7 @@ const char* password = "sabotagem";
 
 const char* mqtt_server = "test.mosquitto.org";
 const int mqtt_port = 1883;
-const char* mqtt_topic = "/roger/teste";
+const char* mqtt_topic = "/codenine/tecsus";
 
 #define DHTPIN 13
 #define DHTTYPE DHT11
@@ -46,7 +46,7 @@ void reconnect() {
     Serial.print("Conectando ao MQTT...");
     if (client.connect("08D1F999F194")) {
       Serial.println("Conectado ao broker MQTT!");
-      client.subscribe("/roger/teste");
+      client.subscribe("/codenine/tecsus");
     } else {
       Serial.print("Falhou, rc=");
       Serial.print(client.state());
