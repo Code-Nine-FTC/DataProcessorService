@@ -2,14 +2,14 @@
 import json
 
 from src.config.dependency.mqtt_client_connection import MQTTClientConnection
-from src.config.settings import Settings
+from src.config.settings import settings
 from src.services.processing.mongo_observer import MongoObserver
 from src.utils.common import Singleton
 
 
 class MQTTConsumer(metaclass=Singleton):
     def __init__(self) -> None:
-        self.__settings = Settings()  # type: ignore[call-arg]
+        self.__settings = settings # type: ignore[call-arg]
         self.__mqtt_client_connection = MQTTClientConnection()
         self.__observer = MongoObserver()
         self.__mqtt_client_connection.mqtt_client.on_message = self.on_message
