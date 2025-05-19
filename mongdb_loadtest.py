@@ -1,7 +1,8 @@
 from pymongo import MongoClient
 import time
+import os
 
-client = MongoClient("mongodb+srv://ninecodek9:hC5EPmsZw2VoJS2S@cluster0.sfjpedo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+client = MongoClient(os.getenv(DATABASE_MONGO_URL))
 collection = client.db.station_data
 
 start = time.time()
