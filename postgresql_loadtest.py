@@ -1,8 +1,9 @@
 import asyncio
 import asyncpg
 import time
+import os
 
-DB_URL = "postgresql://codenine:codenine2025@34.231.36.192:5432/tecsus"
+DB_URL = os.getenv("DATABASE_POSTGRES_URL")
 
 NUM_INSERCOES = 10000
 BATCH_SIZE = 500  # insere 500 por vez
