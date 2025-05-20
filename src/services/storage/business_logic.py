@@ -5,7 +5,7 @@ from src.services.storage.core.models.db_model import (
     Measures,
     TypeAlert,
 )
-
+import logging
 
 class BusinessLogic:
     @staticmethod
@@ -23,7 +23,7 @@ class BusinessLogic:
         elif signal == "<=":
             op = lambda x, y: x <= y  # noqa E731
         else:
-            print("Invalid signal:", signal)
+            logging.warning("Invalid signal:", signal)
             return False
 
         return op(measure.value, type_alert.value)  # type: ignore[no-any-return, no-untyped-call]

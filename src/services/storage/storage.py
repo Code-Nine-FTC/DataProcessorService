@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.services.storage.business_logic import BusinessLogic
 from src.services.storage.repository import PostgresRepository
-
+import logging
 
 class PostgresStorage:
     def __init__(self, session: AsyncSession) -> None:
@@ -19,16 +19,16 @@ class PostgresStorage:
                 await self._process_data(data)
         except Exception as e:
             await self._session.rollback()
-            raise e
+            logging.error(f"Error processing data: {e}")
 
     async def _process_data(self, data: dict[str, Any]) -> None:
         station = await self._data_repository.get_station_by_uid(data.get("uid"))  # type: ignore[arg-type]
         if not station:
-            print("Station not found with uid:", data.get("uid"))
+            logging.warning("Station not found with uid: %s", data.get("uid"))
             return
         parameters = await self._data_repository.get_all_parameter(station.id)
         if not parameters:
-            print("No parameters found for station:", station.id)
+            logging.warning("No parameters found for station: %s", station.id)
             return
 
         for parameter in parameters:
