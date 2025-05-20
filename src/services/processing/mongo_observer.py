@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any
 
 from src.services.ingestion.mongo_repository import MongoRepository
 from src.utils.common import CombinedMeta, DataObserver
-import logging
+
 
 class MongoObserver(DataObserver, metaclass=CombinedMeta):
     def __init__(self) -> None:

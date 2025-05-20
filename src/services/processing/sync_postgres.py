@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from src.config.dependency.postgres_db import DatabasePostgres
 from src.services.ingestion.mongo_repository import MongoRepository
 from src.services.storage.storage import PostgresStorage
-import logging
+
 
 class SyncPostgres:
     def __init__(self) -> None:

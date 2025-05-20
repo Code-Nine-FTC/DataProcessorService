@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.services.storage.business_logic import BusinessLogic
 from src.services.storage.repository import PostgresRepository
-import logging
+
 
 class PostgresStorage:
     def __init__(self, session: AsyncSession) -> None:
