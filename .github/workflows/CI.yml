@@ -18,59 +18,49 @@ jobs:
     uses: ./.github/workflows/verify-commit.yml
     secrets: inherit
 
-  lint-after-push:
-    if: github.event_name == 'push' && (contains(github.ref, 'feature/') || contains(github.ref, 'hotfix/'))
-    needs: commit-check
+  lint:
+    needs: [commit-check]
+    if: |
+      always() && 
+      (needs.commit-check.result == 'success' || needs.commit-check.result == 'skipped') &&
+      (
+        (github.event_name == 'push' && (contains(github.ref, 'feature/') || contains(github.ref, 'hotfix/'))) ||
+        (github.event_name == 'pull_request' && (
+          (contains(github.base_ref, 'develop') && (contains(github.head_ref, 'feature/') || contains(github.head_ref, 'hotfix/'))) ||
+          (contains(github.base_ref, 'release') && contains(github.head_ref, 'develop')) ||
+          (contains(github.base_ref, 'main') && contains(github.head_ref, 'release'))
+        ))
+      )
     uses: ./.github/workflows/verify-lint.yml
     secrets: inherit
 
-  unit-tests-after-push:
-    if: github.event_name == 'push' && (contains(github.ref, 'feature/') || contains(github.ref, 'hotfix/'))
-    needs: lint-after-push
+  unit-tests:
+    needs: [lint]
+    if: |
+      always() && 
+      needs.lint.result == 'success' &&
+      (
+        (github.event_name == 'push' && (contains(github.ref, 'feature/') || contains(github.ref, 'hotfix/'))) ||
+        (github.event_name == 'pull_request' && (
+          (contains(github.base_ref, 'release') && contains(github.head_ref, 'develop')) ||
+          (contains(github.base_ref, 'main') && contains(github.head_ref, 'release'))
+        ))
+      )
     uses: ./.github/workflows/execute-unit-tests.yml
     secrets: inherit
 
-  lint-feature-to-develop:
-    if: github.event_name == 'pull_request' && contains(github.base_ref, 'develop') && (contains(github.head_ref, 'feature/') || contains(github.head_ref, 'hotfix/'))
-    uses: ./.github/workflows/verify-lint.yml
-    secrets: inherit
-
-  integration-tests-feature-to-develop:
-    if: github.event_name == 'pull_request' && contains(github.base_ref, 'develop') && (contains(github.head_ref, 'feature/') || contains(github.head_ref, 'hotfix/'))
-    needs: lint-feature-to-develop
-    uses: ./.github/workflows/execute-integration-tests.yml
-    secrets: inherit
-
-  lint-develop-to-release:
-    if: github.event_name == 'pull_request' && contains(github.base_ref, 'release') && contains(github.head_ref, 'develop')
-    uses: ./.github/workflows/verify-lint.yml
-    secrets: inherit
-
-  unit-tests-develop-to-release:
-    if: github.event_name == 'pull_request' && contains(github.base_ref, 'release') && contains(github.head_ref, 'develop')
-    needs: lint-develop-to-release
-    uses: ./.github/workflows/execute-unit-tests.yml
-    secrets: inherit
-
-  integration-tests-develop-to-release:
-    if: github.event_name == 'pull_request' && contains(github.base_ref, 'release') && contains(github.head_ref, 'develop')
-    needs: unit-tests-develop-to-release
-    uses: ./.github/workflows/execute-integration-tests.yml
-    secrets: inherit
-
-  lint-release-to-main:
-    if: github.event_name == 'pull_request' && contains(github.base_ref, 'main') && contains(github.head_ref, 'release')
-    uses: ./.github/workflows/verify-lint.yml
-    secrets: inherit
-
-  unit-tests-release-to-main:
-    if: github.event_name == 'pull_request' && contains(github.base_ref, 'main') && contains(github.head_ref, 'release')
-    needs: lint-release-to-main
-    uses: ./.github/workflows/execute-unit-tests.yml
-    secrets: inherit
-
-  integration-tests-release-to-main:
-    if: github.event_name == 'pull_request' && contains(github.base_ref, 'main') && contains(github.head_ref, 'release')
-    needs: unit-tests-release-to-main
+  integration-tests:
+    needs: [lint, unit-tests]
+    if: |
+      always() && 
+      needs.lint.result == 'success' && 
+      (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped') &&
+      (
+        (github.event_name == 'pull_request' && (
+          (contains(github.base_ref, 'develop') && (contains(github.head_ref, 'feature/') || contains(github.head_ref, 'hotfix/'))) ||
+          (contains(github.base_ref, 'release') && contains(github.head_ref, 'develop')) ||
+          (contains(github.base_ref, 'main') && contains(github.head_ref, 'release'))
+        ))
+      )
     uses: ./.github/workflows/execute-integration-tests.yml
     secrets: inherit
