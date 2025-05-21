@@ -64,3 +64,54 @@ jobs:
       )
     uses: ./.github/workflows/execute-integration-tests.yml
     secrets: inherit
+
+  deploy:
+    needs: [lint, unit-tests, integration-tests]
+    if: |
+      github.event_name == 'push' && 
+      github.ref == 'refs/heads/main' && 
+      (needs.lint.result == 'success' || needs.lint.result == 'skipped') &&
+      (needs.unit-tests.result == 'success' || needs.unit-tests.result == 'skipped') &&
+      (needs.integration-tests.result == 'success' || needs.integration-tests.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get latest version tag
+        id: get_latest_tag
+        run: |
+          # Buscar a tag mais recente e incrementar
+          LATEST_TAG=$(git tag -l "v*" | sort -V | tail -n 1)
+          if [ -z "$LATEST_TAG" ]; then
+            # Se não houver tags, começar com v1.0
+            NEW_TAG="v1.0"
+          else
+            # Incrementar o número menor da versão
+            MAJOR_VERSION=$(echo $LATEST_TAG | cut -d '.' -f 1)
+            MINOR_VERSION=$(echo $LATEST_TAG | cut -d '.' -f 2)
+            NEW_MINOR=$((MINOR_VERSION + 1))
+            NEW_TAG="${MAJOR_VERSION}.${NEW_MINOR}"
+          fi
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+          echo "Nova tag a ser criada: $NEW_TAG"
+
+      - name: Create and push tag
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git tag -a ${{ env.NEW_TAG }} -m "Release ${{ env.NEW_TAG }}"
+          git push origin ${{ env.NEW_TAG }}
+          echo "Tag ${{ env.NEW_TAG }} criada e enviada com sucesso!"
+
+      - name: Deploy application
+        run: |
+          echo "Iniciando deploy da versão ${{ env.NEW_TAG }}"
+          # Aqui você pode adicionar os comandos para fazer o deploy da sua aplicação
+          # Por exemplo:
+          # - Deploy para um ambiente de produção
+          # - Notificação para equipes
+          # - Atualização de documentação
+          echo "Deploy concluído com sucesso!"
