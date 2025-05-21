@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from typing import Any
 
 from src.services.ingestion.mongo_repository import MongoRepository
@@ -13,4 +14,4 @@ class MongoObserver(DataObserver, metaclass=CombinedMeta):
         try:
             self.__mongo_repository.insert_data(data)
         except Exception as e:
-            raise Exception(f"Error inserting data into MongoDB: {e}") from e
+            logging.error("Failed to insert data into MongoDB: %s", e)
