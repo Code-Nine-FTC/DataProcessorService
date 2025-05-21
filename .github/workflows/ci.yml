@@ -107,11 +107,4 @@ jobs:
           echo "Tag ${{ env.NEW_TAG }} criada e enviada com sucesso!"
 
       - name: Deploy application
-        run: |
-          echo "Iniciando deploy da versão ${{ env.NEW_TAG }}"
-          # Aqui você pode adicionar os comandos para fazer o deploy da sua aplicação
-          # Por exemplo:
-          # - Deploy para um ambiente de produção
-          # - Notificação para equipes
-          # - Atualização de documentação
-          echo "Deploy concluído com sucesso!"
+        uses: ./.github/workflows/deploy.yml
