@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 
-broker = "test.mosquitto.org"  # ? as vezes o mosquitto não está disponível usar localhost
+broker = "test.mosquitto.org"
 port = 1883
 topic = "/roger/teste"
 
