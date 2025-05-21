@@ -1,12 +1,15 @@
 # simulador_mqtt.py
 
 import json
+import random
 import time
 
 import paho.mqtt.client as mqtt
 
-# Configurações do broker MQTT LOCAL
-broker = "localhost"  # Ou 127.0.0.1
+# ! Configurações do broker MQTT LOCAL
+broker = (
+    "test.mosquitto.org"  # ? as vezes o mosquitto não está disponível usar localhost
+)
 port = 1883
 topic = "/roger/teste"
 
@@ -23,9 +26,9 @@ print(f"Enviando dados simulados para o tópico '{topic}'...")
 try:
     while True:
         payload = {
-            "uid": "UID-123",
-            "temp": 30,
-            "umidade": 40,
+            "uid": "UID-456",
+            "temp": random.randint(5, 30),
+            "umidade": random.randint(80, 95),
             "unixtime": int(time.time()),
         }
 
