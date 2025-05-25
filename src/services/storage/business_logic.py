@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from src.schemas.alert import AlertData
 from src.schemas.measure import MeasureData
 from src.services.storage.core.models.db_model import (
@@ -23,7 +25,7 @@ class BusinessLogic:
         elif signal == "<=":
             op = lambda x, y: x <= y  # noqa E731
         else:
-            print("Invalid signal:", signal)
+            logging.warning(f"Invalid signal: {signal}")
             return False
 
         return op(measure.value, type_alert.value)  # type: ignore[no-any-return, no-untyped-call]
