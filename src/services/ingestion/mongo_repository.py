@@ -13,7 +13,7 @@ class MongoRepository(metaclass=Singleton):
 
     def insert_data(self, data: dict[str, Any]) -> None:
         self._collection.insert_one(data)
-        
+
     def insert_batch_data(self, data_list: list[dict[str, Any]]) -> None:
         if data_list:
             self._collection.insert_many(data_list)

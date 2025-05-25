@@ -1,12 +1,15 @@
+# mypy: ignore-errors
 import asyncio
-import asyncpg
-import time
 import os
+import time
+
+import asyncpg
 
 DB_URL = os.getenv("DATABASE_POSTGRES_URL")
 
 NUM_INSERCOES = 10000
 BATCH_SIZE = 500  # insere 500 por vez
+
 
 async def preparar_banco(conn):
     await conn.execute("""
@@ -17,6 +20,7 @@ async def preparar_banco(conn):
             timestamp TIMESTAMPTZ DEFAULT now()
         );
     """)
+
 
 async def inserir_dados(conn):
     inicio = time.time()
@@ -31,10 +35,12 @@ async def inserir_dados(conn):
     fim = time.time()
     print(f"Inseridos {NUM_INSERCOES} registros em {fim - inicio:.2f} segundos")
 
+
 async def main():
     conn = await asyncpg.connect(DB_URL)
     await preparar_banco(conn)
     await inserir_dados(conn)
     await conn.close()
+
 
 asyncio.run(main())

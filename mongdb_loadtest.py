@@ -1,6 +1,7 @@
-from pymongo import MongoClient
-import time
 import os
+import time
+
+from pymongo import MongoClient
 
 client = MongoClient(os.getenv("DATABASE_MONGO_URL"))
 collection = client.db.station_data
