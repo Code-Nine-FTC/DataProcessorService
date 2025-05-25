@@ -31,5 +31,6 @@ class MQTTConsumer(metaclass=Singleton):
         self.__mqtt_client_connection.start_loop()
 
     def stop(self) -> None:
+        self.__observer.flush()
         self.__mqtt_client_connection.stop_loop()
         self.__mqtt_client_connection.disconnect()
